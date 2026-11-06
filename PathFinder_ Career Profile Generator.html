@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PathFinder: Career Profile Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f6fa;--card:#fff;--ink:#0f1b33;--mute:#55627a;--line:#dde2ec;--acc:#1f4fd8;--acc-ink:#fff;--soft:#e9eefc;--warn:#b4570a;--ok:#12794a;--bar:#e3e7f1;--hero:#0b1f4d;--gold:#e0a82e;--sh:0 1px 2px rgba(15,27,51,.06),0 6px 20px rgba(15,27,51,.05);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1020;--card:#151c33;--ink:#e8ecf7;--mute:#9aa6c2;--line:#27304f;--acc:#7b9bff;--acc-ink:#0b1020;--soft:#212b50;--warn:#f0a35e;--ok:#4cc790;--bar:#27304f;--hero:#101a3a;--sh:none}}
+:root[data-theme="dark"]{--bg:#0b1020;--card:#151c33;--ink:#e8ecf7;--mute:#9aa6c2;--line:#27304f;--acc:#7b9bff;--acc-ink:#0b1020;--soft:#212b50;--warn:#f0a35e;--ok:#4cc790;--bar:#27304f;--hero:#101a3a;--sh:none}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Source Sans 3",system-ui,sans-serif}
+h1,h2,h3,button,label,.tab,nav a,.brand{font-family:Manrope,system-ui,sans-serif}
+.top{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--card);z-index:10}
+.bar-in{max-width:1080px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-weight:800;font-size:19px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:9px;margin-right:auto}
+.mark{width:30px;height:30px;border-radius:8px;background:var(--hero);color:var(--gold);display:grid;place-items:center;font-size:16px}
+nav{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+nav a{color:var(--mute);text-decoration:none;font-weight:600;font-size:14px;padding:7px 11px;border-radius:7px}
+nav a.on{background:var(--soft);color:var(--ink)}nav a:hover{color:var(--ink)}
+nav .cta{background:var(--acc);color:var(--acc-ink)}nav .out{border:1px solid var(--line)}
+.user{font:700 13px Manrope,sans-serif;background:var(--soft);padding:6px 11px;border-radius:99px;margin-left:6px}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 16px 40px}
+section{display:none}section.on{display:block}
+.hero{background:var(--hero);color:#fff;border-radius:16px;padding:clamp(24px,5vw,56px);display:grid;grid-template-columns:1.15fr .85fr;gap:32px;align-items:center}
+@media(max-width:820px){.hero,.about,.two,.dash,.steps3{grid-template-columns:1fr!important}}
+h1{font-size:clamp(32px,5vw,52px);line-height:1.06;margin:0 0 16px;letter-spacing:-.025em;font-weight:800}
+.hero p{color:#c3cde6;font-size:19px;margin:0 0 26px;max-width:46ch}
+.btn{background:var(--acc);color:var(--acc-ink);border:0;border-radius:9px;padding:13px 22px;font-size:16px;font-weight:700;cursor:pointer}
+.hero .btn{background:var(--gold);color:#1a1405}
+.hero .ghost{background:none;border:1px solid #4a5b8c;color:#fff;border-radius:9px;padding:12px 20px;font-size:16px;cursor:pointer;font-weight:700;font-family:Manrope,sans-serif}
+.ghost{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:7px;padding:6px 12px;font-size:13px;cursor:pointer;font-weight:700}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.prev{background:var(--card);color:var(--ink);border-radius:12px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.prev .big{font:800 44px/1 Manrope,sans-serif;color:var(--acc)}
+.sec{margin:44px 0 6px;font-size:26px;font-weight:800;letter-spacing:-.01em}
+.feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:16px 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;box-shadow:var(--sh)}
+.feat .card{border-top:3px solid var(--acc)}.feat h3{margin:0 0 6px;font-size:17px}.feat p{margin:0;color:var(--mute);font-size:16px}
+.steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.steps3 b{font:800 14px Manrope,sans-serif;color:var(--acc)}
+.about{display:grid;grid-template-columns:1fr 1fr;gap:20px}.about p{color:var(--mute)}
+footer{border-top:1px solid var(--line);margin-top:40px;padding:20px 0 0;color:var(--mute);font-size:14px}
+h2{font-size:26px;margin:0 0 8px;font-weight:800;letter-spacing:-.01em}
+label{display:block;font-size:14px;font-weight:700;margin:15px 0 5px}
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea{min-height:70px;resize:vertical}
+.hint{font-size:14px;color:var(--mute);margin-top:4px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{font:700 12px Manrope,sans-serif;background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:99px;padding:5px 11px;cursor:pointer}
+.auth{max-width:420px;margin:24px auto}.auth h2{margin-bottom:2px}
+.auth .btn,#saveProfile{width:auto}.auth .btn{width:100%;margin-top:18px}
+.auth p a{color:var(--acc);font-weight:700}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px;overflow-x:auto}
+.tab{background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px;font-size:15px;font-weight:700;color:var(--mute);cursor:pointer;white-space:nowrap}
+.tab[aria-selected=true]{color:var(--ink);border-color:var(--acc)}
+.score{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+.score b{font:800 52px/1 Manrope,sans-serif;color:var(--acc)}
+.fmt{border-left:3px solid var(--acc);padding:2px 0 2px 14px;margin:10px 0 22px}
+.fmt h3{margin:0 0 6px;font-size:16px;display:flex;justify-content:space-between;align-items:center;gap:8px}.fmt p{margin:0;white-space:pre-wrap}
+.row{display:grid;grid-template-columns:170px 1fr 70px;gap:10px;align-items:center;margin:9px 0;font-size:15px}
+@media(max-width:520px){.row{grid-template-columns:110px 1fr 62px}}
+.row .n{font-family:Manrope,sans-serif;font-weight:700}
+.bar{position:relative;height:12px;background:var(--bar);border-radius:6px}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--acc)}
+.bar u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink)}
+.tag{font:700 12px Manrope,sans-serif;padding:2px 8px;border-radius:99px;border:1px solid var(--line);justify-self:end}
+.t-miss{color:var(--warn)}.t-ok{color:var(--ok)}
+.step{display:grid;grid-template-columns:92px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
+.step .wk{font:700 14px Manrope,sans-serif;color:var(--acc)}.step h3{margin:0 0 2px;font-size:16px}.step p{margin:2px 0}
+.q{padding:12px 0;border-top:1px solid var(--line)}.q b{font-family:Manrope,sans-serif}.q p{margin:4px 0 0;color:var(--mute)}
+.facts{background:var(--soft);border-radius:8px;padding:12px 14px;font-size:15px;margin-top:6px}
+.chk{font-size:15px;display:grid;gap:4px}.chk span{font-family:Manrope,sans-serif;font-weight:700}
+.empty{text-align:center;color:var(--mute);padding:48px 10px}
+.dash{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.saved{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:14px 0;border-top:1px solid var(--line)}
+.saved:first-child{border-top:0}.saved b{font-family:Manrope,sans-serif}.acts{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font:700 12px Manrope,sans-serif;background:var(--soft);border-radius:99px;padding:3px 10px}
+.t-miss.hint{color:var(--warn)}
+</style>
+</head>
+<body>
+<header class="top"><div class="bar-in"><a class="brand" href="#home"><span class="mark">P</span>PathFinder</a><nav id="nav"></nav></div></header>
+<div class="wrap">
+
+<section id="s-home">
+<div class="hero"><div><h1>Career guidance built around you</h1><p>Tell PathFinder your skills, interests and goals. Get a professional summary, a skill-gap report, a learning plan and interview preparation, all consistent with each other.</p><button class="btn" id="start">Get started</button> <button class="ghost" id="start2">Log in</button></div>
+<div class="prev" aria-hidden="true"><div style="display:flex;align-items:baseline;gap:8px"><span class="big">78%</span><span class="hint">ready for Data Scientist</span></div>
+<div class="row" style="grid-template-columns:90px 1fr 50px"><span class="n">Python</span><span class="bar"><i style="width:80%"></i><u style="left:80%"></u></span><span class="tag t-ok">Met</span></div>
+<div class="row" style="grid-template-columns:90px 1fr 50px"><span class="n">SQL</span><span class="bar"><i style="width:60%"></i><u style="left:80%"></u></span><span class="tag t-miss">Gap 1</span></div>
+<div class="row" style="grid-template-columns:90px 1fr 50px"><span class="n">Statistics</span><span class="bar"><i style="width:40%"></i><u style="left:80%"></u></span><span class="tag t-miss">Gap 2</span></div></div></div>
+<h2 class="sec">What you get</h2>
+<div class="feat">
+<div class="card"><h3>Professional summary</h3><p>A resume summary, LinkedIn About and short bio in your chosen tone.</p></div>
+<div class="card"><h3>Skill-gap report</h3><p>Your level against what the target role expects, with a readiness score.</p></div>
+<div class="card"><h3>Learning plan</h3><p>A week-by-week schedule that fits your weekly study hours.</p></div>
+<div class="card"><h3>Interview preparation</h3><p>Questions and answer outlines tailored to your strengths and gaps.</p></div></div>
+<h2 class="sec">How it works</h2>
+<div class="steps3"><div class="card"><b>Step 1</b><h3 style="margin:4px 0">Create a profile</h3><p class="hint">Add your education, interests, skills and career goal.</p></div><div class="card"><b>Step 2</b><h3 style="margin:4px 0">Review your dashboard</h3><p class="hint">See your readiness and skill progress at a glance.</p></div><div class="card"><b>Step 3</b><h3 style="margin:4px 0">Generate your report</h3><p class="hint">Copy or download it, and find it later in Saved reports.</p></div></div>
+<h2 class="sec">About</h2>
+<div class="card about"><div><h3 style="margin:0 0 6px">Who it is for</h3><p style="margin:0">Students who are unsure how their current skills connect to a career. PathFinder compares your profile with six common career paths.</p></div><div><h3 style="margin:0 0 6px">One profile, every format</h3><p style="margin:0">The same role, strengths and focus areas appear in every output, and a built-in check confirms it.</p></div></div>
+<footer>Accounts and reports are stored in this browser on this device only.</footer>
+</section>
+
+<section id="s-login"><div class="card auth"><h2 id="authTitle"></h2><p class="hint" id="authSub" style="margin-top:0"></p>
+<div id="fName"><label for="fn">Full name</label><input id="fn" autocomplete="name"></div>
+<label for="em">Email</label><input id="em" type="email" autocomplete="email">
+<label for="pw">Password</label><input id="pw" type="password">
+<p class="hint t-miss" id="amsg" role="alert"></p>
+<button class="btn" id="authGo" data-m="login">Log in</button>
+<p class="hint" id="authSwap" style="text-align:center;margin-top:14px"></p>
+<p class="hint">Accounts are stored in this browser only. Do not reuse an important password.</p></div></section>
+
+<section id="s-logout"><div class="card auth" style="text-align:center"><h2>You are signed out</h2><p class="hint">Your profile and reports are saved. Log in again any time to continue.</p><button class="btn" onclick="go('login')">Log in again</button><p class="hint" style="margin-top:12px"><a href="#home">Back to home</a></p></div></section>
+
+<section id="s-profile">
+<h2>Student profile</h2><p class="hint" style="margin-top:0">Fill this in once. You can edit it and generate new reports any time.</p>
+<div class="card">
+<div class="two"><div><label for="name">Name</label><input id="name" autocomplete="name"></div><div><label for="degree">Education (degree and year)</label><input id="degree"></div></div>
+<label for="interests">Academic interests</label><input id="interests"><div class="hint">Separate with commas.</div>
+<label for="skills">Existing skills, with level 1–5</label><textarea id="skills"></textarea>
+<div class="hint">Example: Python:4, SQL:3. No level means 3. Tap a chip to add a skill your target role needs.</div><div class="chips" id="sugg"></div>
+<div class="two"><div><label for="goal">Career goal</label><select id="goal"></select></div><div><label for="exp">Experience level</label><select id="exp"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></div></div>
+<label for="goaltext">Goal in your own words (optional)</label><input id="goaltext" placeholder="For example: an analytics internship next summer">
+<div class="two"><div><label for="hours">Study hours per week</label><input id="hours" type="number" min="2" max="40"></div><div><label for="tone">Writing tone</label><select id="tone"><option value="pro">Professional</option><option value="warm">Enthusiastic</option><option value="short">Concise</option></select></div></div>
+<p style="margin-top:20px"><button class="btn" id="saveProfile">Save profile and continue</button> <button class="ghost" id="sample">Fill with example</button></p><p class="hint t-miss" id="pmsg"></p>
+</div></section>
+
+<section id="s-dashboard"><div id="dashBody"></div></section>
+<section id="s-report"><div id="reportBody"></div></section>
+<section id="s-saved"><div id="savedBody"></div></section>
+</div>
+<script>
+var R={
+ds:{t:"Data Scientist",a:"a Data Scientist",focus:"turning data into decisions",sk:[
+["Python",3,["python"],"Kaggle Python and Pandas micro-courses",25,"Clean and analyse a public dataset in a notebook"],
+["Statistics",3,["statist","probab"],"Khan Academy Statistics and Probability",35,"Write up an A/B test analysis with confidence intervals"],
+["SQL",3,["sql","database","mysql","postgres"],"Mode SQL Tutorial plus 30 practice queries",20,"Answer 10 business questions on a sample database"],
+["Machine learning",2,["machine learning","ml","scikit","deep learning"],"Andrew Ng Machine Learning Specialization",50,"Train and evaluate a classifier with cross-validation"],
+["Data visualization",2,["visual","tableau","power bi","matplotlib"],"Tableau Public free training",15,"Publish an interactive dashboard"],
+["Excel",1,["excel","spreadsheet"],"Microsoft Excel data analysis tutorials",10,"Build a pivot-table report"],
+["Communication",1,["communicat","present","writing"],"Storytelling with Data (book and blog)",10,"Present one project in five minutes to a non-technical friend"]],
+q:["Explain the bias-variance trade-off with an example.","How would you handle missing values in a dataset, and when is each approach wrong?","A metric dropped 10% this week. Walk me through how you investigate.","Explain a p-value to a non-technical manager."]},
+swe:{t:"Software Engineer",a:"a Software Engineer",focus:"building reliable software that people use",sk:[
+["Programming fundamentals",3,["python","java","c++","javascript","typescript","programming","coding"],"CS50 by Harvard (free)",40,"Build a command-line tool with tests"],
+["Data structures and algorithms",3,["dsa","algorithm","data structure","leetcode"],"NeetCode roadmap and 75 curated problems",60,"Solve 75 problems and explain each pattern aloud"],
+["Git and collaboration",2,["git","github","version control"],"Pro Git book, chapters 1–3",8,"Contribute a pull request to an open-source repo"],
+["Web development",2,["web","html","css","react","node","frontend","backend"],"The Odin Project foundations",50,"Deploy a full-stack app with login"],
+["Databases",2,["sql","database","mongo","postgres"],"SQLBolt and PostgreSQL tutorial",20,"Design a schema and write queries for your app"],
+["System design basics",1,["system design","architecture","api","scal"],"System Design Primer on GitHub",25,"Draw the architecture of your app and justify choices"],
+["Communication",1,["communicat","teamwork","present"],"Google engineering practices on code review",8,"Write a clear README and review a peer’s code"]],
+q:["Reverse a linked list and explain its time and space complexity.","What happens when you type a URL into a browser and press Enter?","Design a URL shortener. What are the bottlenecks?","Describe a bug you spent a long time on. How did you find it?"]},
+pm:{t:"Product Manager",a:"a Product Manager",focus:"solving real user problems with clear priorities",sk:[
+["User research",3,["research","interview","survey","user"],"Nielsen Norman Group articles on user interviews",15,"Interview five users and summarise insights"],
+["Product strategy",3,["strategy","roadmap","product","market"],"Inspired by Marty Cagan (book)",20,"Write a one-page strategy for an app you use"],
+["Data analysis",2,["data","sql","excel","analytic","metric"],"Google Analytics Academy",20,"Define success metrics for a feature"],
+["Prioritisation frameworks",2,["priorit","rice","moscow"],"Intercom blog on RICE scoring",6,"Prioritise a 10-item backlog with RICE"],
+["Communication",3,["communicat","present","writing","leadership"],"Coursera Writing in the Sciences or Toastmasters",15,"Write a PRD and present it"],
+["Basic technical literacy",1,["python","api","code","web"],"CS50 for Business Professionals",15,"Explain how an API works to a friend"]],
+q:["How would you improve a food delivery app’s checkout?","Which metric would you track for a new messaging feature, and why?","You have two features and one engineer. How do you decide?","Tell me about a time you influenced a decision without authority."]},
+ux:{t:"UX Designer",a:"a UX Designer",focus:"making products clear, usable and humane",sk:[
+["User research",3,["research","interview","usability","survey"],"Interaction Design Foundation: User Research",20,"Run a usability test with five participants"],
+["Wireframing and prototyping",3,["figma","wireframe","prototype","sketch"],"Figma official learning tutorials",25,"Prototype a mobile flow end to end"],
+["Visual design",2,["visual","typography","ui","color","graphic"],"Refactoring UI (book) and Google Material Design",20,"Redesign one screen of a real app"],
+["Information architecture",2,["information architecture","navigation","ia","card sort"],"Nielsen Norman Group IA articles",10,"Run a card sort and propose a sitemap"],
+["Accessibility",2,["accessib","wcag","a11y"],"WebAIM and WCAG quick reference",10,"Audit a site against WCAG AA"],
+["Communication",1,["communicat","present","storytelling"],"Case study writing guides from Google UX Design Certificate",10,"Publish one case study with outcomes"]],
+q:["Walk me through your design process on a recent project.","How would you design for users who have low vision?","A stakeholder disagrees with your design. What do you do?","How do you decide when research is enough?"]},
+sec:{t:"Cybersecurity Analyst",a:"a Cybersecurity Analyst",focus:"protecting systems and people from threats",sk:[
+["Networking",3,["network","tcp","dns","cisco"],"Professor Messer Network+ (free videos)",35,"Capture and explain traffic with Wireshark"],
+["Operating systems and Linux",3,["linux","unix","windows","bash","operating system"],"OverTheWire Bandit wargame",20,"Harden a Linux VM and document changes"],
+["Security fundamentals",3,["security","crypto","owasp","infosec"],"Professor Messer Security+ (free videos)",40,"Explain the OWASP Top 10 with an example each"],
+["Scripting",2,["python","bash","powershell","script"],"Automate the Boring Stuff with Python",25,"Write a log parser that flags suspicious logins"],
+["Threat detection and SIEM",2,["siem","splunk","incident","detect","soc"],"TryHackMe SOC Level 1 path",30,"Investigate a simulated incident and write a report"],
+["Communication",1,["communicat","report","writing"],"SANS incident report templates",8,"Write an executive summary of a finding"]],
+q:["Explain the difference between symmetric and asymmetric encryption.","Describe what you would do first after detecting a phishing compromise.","What is SQL injection and how do you prevent it?","How would you explain a risk to a non-technical executive?"]},
+mkt:{t:"Digital Marketing Specialist",a:"a Digital Marketing Specialist",focus:"growing audiences with measurable campaigns",sk:[
+["SEO and content",3,["seo","content","blog","copywriting"],"Google Search Central and Ahrefs Academy",20,"Grow a blog or site to 20 ranking keywords"],
+["Analytics",3,["analytic","ga4","data","excel","metric"],"Google Analytics certification (free)",15,"Build a monthly performance report"],
+["Paid media",2,["ads","paid","ppc","facebook","google ads"],"Google Skillshop and Meta Blueprint",20,"Run a small paid campaign with a Rs 2,000 budget"],
+["Social media strategy",2,["social","instagram","linkedin","community"],"HubSpot Social Media Marketing course",12,"Plan and run a 30-day content calendar"],
+["Email and automation",1,["email","automation","mailchimp","crm"],"HubSpot Email Marketing course",10,"Build a three-email welcome sequence"],
+["Communication",2,["communicat","writing","present","storytelling"],"Everybody Writes by Ann Handley",10,"Write three brand-voice samples"]],
+q:["How do you measure the success of a campaign?","A campaign has high clicks but no conversions. What do you check?","How would you allocate a small budget across channels?","Tell me about content you created that performed well, and why."]}
+};
+var BEH=["Tell me about yourself.","Describe a time you worked in a team and faced conflict.","Tell me about a project you are proud of.","Why do you want this role?"];
+
+var $=function(i){return document.getElementById(i)};
+var cur=null,rep=null,mem=[];
+Object.keys(R).forEach(function(k){var o=document.createElement("option");o.value=k;o.textContent=R[k].t;$("goal").appendChild(o)});
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function list(a){a=a.filter(Boolean);return a.length<2?(a[0]||""):a.slice(0,-1).join(", ")+" and "+a[a.length-1]}
+function sugg(){var r=R[$("goal").value];$("sugg").innerHTML="";r.sk.forEach(function(s){var b=document.createElement("button");b.type="button";b.className="chip";b.textContent="+ "+s[0];b.onclick=function(){var t=$("skills");t.value=(t.value.trim()?t.value.trim()+", ":"")+s[0]+":3"};$("sugg").appendChild(b)})}
+$("goal").onchange=sugg;sugg();
+
+function parseSkills(txt){return txt.split(",").map(function(p){var m=p.split(":");var n=m[0].trim();var l=parseFloat(m[1]);if(!n)return null;return{n:n,l:isNaN(l)?3:Math.max(1,Math.min(5,Math.round(l)))}}).filter(Boolean)}
+
+function analyse(){
+ var role=R[$("goal").value],user=parseSkills($("skills").value),h=Math.max(2,+$("hours").value||8);
+ var rows=role.sk.map(function(s){
+  var req=s[1]===3?4:s[1]===2?3:2;
+  var hit=null;user.forEach(function(u){var ln=u.n.toLowerCase();if(s[2].some(function(a){return ln.indexOf(a)>-1||a===ln})){if(!hit||u.l>hit.l)hit=u}});
+  var lvl=hit?hit.l:0;
+  return{name:s[0],w:s[1],req:req,lvl:lvl,gap:Math.max(0,req-lvl),res:s[3],hrs:s[4],proj:s[5],via:hit?hit.n:null}});
+ var tw=0,sc=0;rows.forEach(function(r){tw+=r.w;sc+=r.w*Math.min(r.lvl/r.req,1)});
+ var strengths=rows.filter(function(r){return r.lvl>=r.req-1&&r.lvl>0}).sort(function(a,b){return b.lvl*b.w-a.lvl*a.w}).slice(0,3);
+ if(!strengths.length)strengths=rows.filter(function(r){return r.lvl>0}).slice(0,3);
+ var gaps=rows.filter(function(r){return r.gap>0}).sort(function(a,b){return b.gap*b.w-a.gap*a.w});
+ var extra=user.filter(function(u){return !rows.some(function(r){return r.via===u.n})}).map(function(u){return u.n});
+ return{name:$("name").value.trim()||"The student",degree:$("degree").value.trim()||"a degree programme",role:role,key:$("goal").value,
+  interests:$("interests").value.split(",").map(function(x){return x.trim()}).filter(Boolean),tone:$("tone").value,h:h,rows:rows,
+  score:Math.round(100*sc/tw),strengths:strengths.map(function(s){return s.name}),sVia:strengths.map(function(s){return s.via}),
+  gaps:gaps,focus:gaps.slice(0,3).map(function(g){return g.name}),extra:extra}}
+
+function summaries(f){
+ var first=f.name.split(" ")[0],S=list(f.strengths),I=list(f.interests.slice(0,3)),F=list(f.focus),G=f.role.a,fc=f.role.focus;
+ var intr=I?" with a particular interest in "+I:"";
+ var learn=F?"I am currently building depth in "+F+".":"I am deepening my expertise through projects.";
+ var out={};
+ if(f.tone==="short"){
+  out.resume=f.degree+" aspiring to be "+G+". Strengths: "+S+". Building: "+(F||"advanced projects")+".";
+  out.linkedin=f.name+" | "+f.degree+" | Aiming to be "+G+". Skilled in "+S+(I?". Interested in "+I+".":".")+" Now learning "+(F||"new tools")+".";
+  out.bio=first+" studies "+f.degree+" and wants to work as "+G+". Top skills: "+S+".";
+ }else if(f.tone==="warm"){
+  out.resume=f.degree+" who loves "+fc+". Brings strengths in "+S+intr+". "+learn+" Ready to grow as "+G+".";
+  out.linkedin="Hi, I am "+f.name+"! I am studying "+f.degree+" and I am excited to become "+G+".\n\nI love "+fc+", and my strongest skills are "+S+intr+". "+learn+"\n\nI would love to connect with people who work in this field and learn from their journeys.";
+  out.bio=first+" is a "+f.degree+" student who is passionate about "+fc+". Their strengths are "+S+intr+", and they are on a clear path toward becoming "+G+".";
+ }else{
+  out.resume=f.degree+" targeting a career as "+G+". Demonstrated strengths in "+S+intr+". "+learn;
+  out.linkedin="I am "+f.name+", a student of "+f.degree+" working towards becoming "+G+".\n\nMy focus is "+fc+". My strongest skills are "+S+intr+". "+learn+"\n\nI am open to internships, mentorship and project collaborations.";
+  out.bio=f.name+" is pursuing "+f.degree+" and aims to become "+G+". Core strengths include "+S+intr+". "+learn;
+ }
+ return out}
+
+function plan(f){var wk=0,steps=[];f.gaps.slice(0,5).forEach(function(g){var need=Math.round(g.hrs*Math.min(1,g.gap/g.req+.35));var w=Math.max(1,Math.ceil(need/f.h));steps.push({name:g.name,from:wk+1,to:wk+w,w:w,res:g.res,proj:g.proj,hrs:need});wk+=w});return{steps:steps,total:wk}}
+
+function interview(f){
+ var role=f.role,qs=[];
+ qs.push({q:BEH[0],a:"Open with your degree, then your top strengths ("+list(f.strengths)+"), then say why you want to be "+role.a+". Close with what you are learning now ("+(list(f.focus)||"new projects")+"). Keep it under 60 seconds."});
+ f.strengths.forEach(function(s,i){qs.push({q:"Tell me about a time you used "+s+(f.sVia[i]&&f.sVia[i].toLowerCase()!==s.toLowerCase()?" (you listed "+f.sVia[i]+")":"")+".",a:"Use STAR. Situation: a course project or internship in "+(f.interests[0]||"your field")+". Task: what you owned. Action: how you applied "+s+". Result: a number, such as time saved, accuracy gained or users reached."})});
+ role.q.forEach(function(q){qs.push({q:q,a:"Role question. Structure your answer as concept, example, trade-off. Practise it aloud once and time yourself."})});
+ f.gaps.slice(0,2).forEach(function(g){qs.push({q:"We need strength in "+g.name+". Where do you stand?",a:"Be honest and show momentum: say you are at level "+g.lvl+" of 5, that you are following "+g.res+", and that you will complete "+g.proj.toLowerCase()+"."})});
+ qs.push({q:BEH[1],a:"Pick a real disagreement. Describe the listening step, the compromise and what you learned."});
+ qs.push({q:BEH[3],a:"Link "+role.focus+" to your interest in "+(f.interests[0]||"the field")+". Mention the role by name: "+role.t+"."});
+ return qs}
+
+
+var EX={name:"Asha Rao",degree:"B.Tech Computer Science, 3rd year",interests:"machine learning, sports analytics, healthcare",skills:"Python:4, SQL:3, Excel:3, Statistics:2, Communication:4",goal:"ds",exp:"Intermediate",goaltext:"An analytics internship next summer",hours:8,tone:"pro"};
+function fill(o){Object.keys(o).forEach(function(k){$(k).value=o[k]});sugg()}
+fill({name:"",degree:"",interests:"",skills:"",goal:"ds",exp:"Beginner",goaltext:"",hours:8,tone:"pro"});
+var M={},SESS=null;
+function rd(k,d){try{var v=localStorage.getItem(k);if(v!==null)return JSON.parse(v)}catch(e){}return k in M?M[k]:d}
+function wr(k,v){M[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function load(){return rd("pf_reports_"+SESS,[])}
+function store(a){wr("pf_reports_"+SESS,a)}
+function vals(){var o={};["name","degree","interests","skills","goal","exp","goaltext","hours","tone"].forEach(function(k){o[k]=$(k).value});return o}
+function hash(p,salt){var t=salt+p;if(window.crypto&&crypto.subtle&&window.TextEncoder)return crypto.subtle.digest("SHA-256",new TextEncoder().encode(t)).then(function(b){return Array.prototype.map.call(new Uint8Array(b),function(x){return("0"+x.toString(16)).slice(-2)}).join("")});var h=5381;for(var i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return Promise.resolve("x"+h)}
+function users(){return rd("pf_users",{})}
+function navRender(){var u=SESS&&users()[SESS],h;
+ if(u){h=[["dashboard","Dashboard"],["profile","Profile"],["report","Report"],["saved","Saved reports"]].map(function(x){return '<a href="#'+x[0]+'" data-r="'+x[0]+'">'+x[1]+'</a>'}).join("")+'<span class="user" title="'+esc(SESS)+'">'+esc(u.name)+'</span><a class="out" href="#logout" data-r="logout">Log out</a>'}
+ else h='<a href="#home" data-r="home">Home</a><a href="#login" data-r="login">Log in</a><a class="cta" href="#signup" data-r="signup">Sign up</a>';
+ $("nav").innerHTML=h}
+function authMode(m){$("authTitle").textContent=m==="signup"?"Create your account":"Welcome back";$("authSub").textContent=m==="signup"?"Save your profile and reports in one place.":"Log in to see your profile and saved reports.";
+ $("fName").style.display=m==="signup"?"block":"none";$("authGo").textContent=m==="signup"?"Create account":"Log in";$("authSwap").innerHTML=m==="signup"?'Already have an account? <a href="#login">Log in</a>':'New here? <a href="#signup">Create an account</a>';$("authGo").dataset.m=m;$("amsg").textContent="";$("pw").autocomplete=m==="signup"?"new-password":"current-password"}
+function startSession(email){SESS=email;wr("pf_sess",email);cur=null;rep=null;var p=rd("pf_profile_"+email,null);
+ fill(p||{name:users()[email].name,degree:"",interests:"",skills:"",goal:"ds",exp:"Beginner",goaltext:"",hours:8,tone:"pro"});
+ if(p&&parseSkills(p.skills).length)cur=build();navRender();go(cur?"dashboard":"profile")}
+function endSession(){SESS=null;cur=null;rep=null;wr("pf_sess",null);fill({name:"",degree:"",interests:"",skills:"",goal:"ds",exp:"Beginner",goaltext:"",hours:8,tone:"pro"});navRender()}
+function submitAuth(){var m=$("authGo").dataset.m,em=$("em").value.trim().toLowerCase(),pw=$("pw").value,nm=$("fn").value.trim(),msg=$("amsg"),U=users();
+ if(!/^\S+@\S+\.\S+$/.test(em)){msg.textContent="Enter a valid email address.";return}
+ if(m==="signup"){if(!nm){msg.textContent="Enter your name.";return}if(pw.length<8){msg.textContent="Use a password with at least 8 characters.";return}if(U[em]){msg.textContent="An account with this email already exists. Log in instead.";return}
+  var salt=Math.random().toString(36).slice(2);hash(pw,salt).then(function(h){U[em]={name:nm,salt:salt,hash:h};wr("pf_users",U);$("pw").value="";startSession(em)})}
+ else{var u=U[em];if(!u){msg.textContent="No account found for this email. Create one first.";return}
+  hash(pw,u.salt).then(function(h){if(h!==u.hash){msg.textContent="Incorrect password. Try again.";return}$("pw").value="";startSession(em)})}}
+function build(){var f=analyse();f.exp=$("exp").value;f.goalText=$("goaltext").value.trim();var sm=summaries(f);
+ if(f.goalText){sm.linkedin+="\n\nCurrent goal: "+f.goalText+".";sm.bio+=" Current goal: "+f.goalText+"."}
+ return{id:Date.now(),ts:new Date().toLocaleString(),f:f,sm:sm,pl:plan(f),iv:interview(f)}}
+function bars(f){return f.rows.map(function(r){var p=Math.round(r.lvl/5*100),q=Math.round(r.req/5*100);var tag=r.lvl===0?'<span class="tag t-miss">Missing</span>':r.gap>0?'<span class="tag t-miss">Gap '+r.gap+'</span>':'<span class="tag t-ok">Met</span>';
+ return '<div class="row"><span class="n">'+esc(r.name)+'</span><span class="bar" title="You: '+r.lvl+', needed: '+r.req+'"><i style="width:'+p+'%"></i><u style="left:'+q+'%"></u></span>'+tag+'</div>'}).join("")}
+
+function dash(){var el=$("dashBody");
+ if(!cur){el.innerHTML='<div class="card empty">No profile yet.<br><br><button class="btn" onclick="go(\'profile\')">Create your profile</button></div>';return}
+ var f=cur.f;
+ el.innerHTML='<h2>Welcome back, '+esc(f.name.split(' ')[0])+'</h2><p class="hint" style="margin-top:-4px">Here is where your career plan stands.</p><div class="dash"><div class="card"><h3 style="margin:0 0 8px">Profile overview</h3><p style="margin:0"><b>'+esc(f.name)+'</b><br>'+esc(f.degree)+'</p><p class="hint">Experience: '+esc(f.exp)+'<br>Interests: '+esc(list(f.interests)||"none yet")+'<br>Study time: '+f.h+' hours a week</p><button class="ghost" onclick="go(\'profile\')">Edit profile</button></div>'+
+ '<div class="card"><h3 style="margin:0 0 8px">Career goal</h3><div class="score"><b>'+f.score+'%</b><span>ready for '+esc(f.role.t)+'</span></div><p class="hint" style="margin:0">'+(f.goalText?esc(f.goalText)+'<br>':'')+(f.focus.length?'Focus next on '+esc(list(f.focus)):'All benchmarks met')+'</p></div></div>'+
+ '<div class="card"><h3 style="margin:0 0 6px">Skill progress</h3><p class="hint" style="margin-top:0">The bar is your level. The line marks the level this role expects.</p>'+bars(f)+'</div>'+
+ '<p style="margin-top:20px"><button class="btn" id="genReport">Generate report</button></p>';
+ $("genReport").onclick=function(){rep=build();var a=load();a.unshift(rep);store(a);go("report")}}
+
+function checks(r){var f=r.f,sm=r.sm,all=[sm.resume,sm.linkedin,sm.bio].join("\n"),w=f.role.t.toLowerCase().split(" ")[0];
+ return[["Target role appears in every format",[sm.resume,sm.linkedin,sm.bio].every(function(t){return t.toLowerCase().indexOf(w)>-1||t.toLowerCase().indexOf(f.role.a.toLowerCase().split(" ").slice(-1)[0])>-1})],
+ ["Top strengths match across summary and interview",f.strengths.every(function(s){return all.indexOf(s)>-1&&r.iv.some(function(q){return q.q.indexOf(s)>-1})})],
+ ["Focus areas match gap report and learning plan",f.focus.every(function(s){return r.pl.steps.some(function(p){return p.name===s})})],
+ ["Name and degree match everywhere",all.indexOf(f.degree)>-1]]}
+function fmt(id,t,x){return '<div class="fmt"><h3>'+t+'<button class="ghost" data-copy="'+id+'">Copy</button></h3><p id="'+id+'">'+esc(x)+'</p></div>'}
+function report(){var el=$("reportBody");
+ if(!rep){el.innerHTML='<div class="card empty">No report open.<br><br><button class="btn" onclick="go(\'dashboard\')">Go to dashboard</button> <button class="ghost" onclick="go(\'saved\')">Saved reports</button></div>';return}
+ var f=rep.f,sm=rep.sm,pl=rep.pl,iv=rep.iv;
+ var T={summary:'<h2>Professional summary</h2>'+fmt("c1","Resume summary",sm.resume)+fmt("c2","LinkedIn About",sm.linkedin)+fmt("c3","Short bio",sm.bio)+'<h3>Shared profile facts</h3><div class="facts"><b>Goal:</b> '+esc(f.role.t)+' &nbsp; <b>Strengths:</b> '+esc(list(f.strengths)||"none matched yet")+' &nbsp; <b>Focus:</b> '+esc(list(f.focus)||"none")+' &nbsp; <b>Interests:</b> '+esc(list(f.interests)||"none")+'</div><h3 style="margin-top:18px">Consistency check</h3><div class="chk">'+checks(rep).map(function(c){return '<div><span style="color:var(--'+(c[1]?'ok':'warn')+')">'+(c[1]?'Pass':'Review')+'</span> '+c[0]+'</div>'}).join("")+'</div>',
+ gaps:'<h2>Skill-gap report</h2><p class="hint">The line marks the level '+esc(f.role.t)+' roles typically expect.</p>'+bars(f)+(f.extra.length?'<p class="hint">Skills not scored for this role: '+esc(f.extra.join(", "))+'. They still support your story in interviews.</p>':'')+'<p>'+(f.gaps.length?'Your biggest priorities are <b>'+esc(list(f.focus))+'</b>.':'You meet every benchmark. Build a portfolio project that combines your skills.')+'</p>',
+ plan:'<h2>Learning recommendations</h2><p class="hint">'+(pl.steps.length?'About '+pl.total+' weeks at '+f.h+' hours a week, ordered by importance.':'No gaps to close right now.')+'</p>'+pl.steps.map(function(s){return '<div class="step"><div class="wk">'+(s.from===s.to?'Week '+s.from:'Weeks '+s.from+'–'+s.to)+'</div><div><h3>'+esc(s.name)+'</h3><p>Resource: '+esc(s.res)+'</p><p>Milestone: '+esc(s.proj)+'</p><p class="hint">About '+s.hrs+' hours</p></div></div>'}).join(""),
+ interview:'<h2>Interview preparation</h2><p class="hint">'+iv.length+' questions tailored to your strengths, gaps and target role.</p>'+iv.map(function(x){return '<div class="q"><b>'+esc(x.q)+'</b><p>'+esc(x.a)+'</p></div>'}).join("")};
+ var L={summary:"Professional summary",gaps:"Skill-gap report",plan:"Learning",interview:"Interview prep"};
+ el.innerHTML='<div class="card"><div class="score"><b>'+f.score+'%</b><span>'+esc(f.name)+', ready for '+esc(f.role.t)+'<br><small class="hint">Created '+esc(rep.ts)+'</small></span></div><div class="tabs" role="tablist">'+Object.keys(L).map(function(k,i){return '<button class="tab" role="tab" data-t="'+k+'" aria-selected="'+(i===0)+'">'+L[k]+'</button>'}).join("")+'</div><div id="pane"></div><p style="margin-top:20px"><button class="ghost" id="cAll">Copy full report</button> <button class="ghost" id="dl">Download report</button> <button class="ghost" onclick="go(\'saved\')">Saved reports</button></p><p class="hint" id="msg"></p></div>';
+ var show=function(k){$("pane").innerHTML=T[k];Array.prototype.forEach.call(document.querySelectorAll(".tab"),function(t){t.setAttribute("aria-selected",t.dataset.t===k)})};show("summary");
+ el.onclick=function(e){var t=e.target;if(t.dataset.t)show(t.dataset.t);if(t.dataset.copy)copy($(t.dataset.copy).textContent,t);if(t.id==="cAll")copy(full(rep),t);if(t.id==="dl")dlr(rep)}}
+
+function full(r){var f=r.f,L=["CAREER PROFILE: "+f.name,f.degree+" | Experience: "+f.exp,"Target: "+f.role.t+" | Readiness: "+f.score+"%","","RESUME SUMMARY",r.sm.resume,"","LINKEDIN ABOUT",r.sm.linkedin,"","SHORT BIO",r.sm.bio,"","SKILL-GAP REPORT"];
+ f.rows.forEach(function(x){L.push("- "+x.name+": level "+x.lvl+", needed "+x.req)});L.push("","LEARNING RECOMMENDATIONS");
+ r.pl.steps.forEach(function(s){L.push("- Weeks "+s.from+"-"+s.to+": "+s.name+" ("+s.res+"). Milestone: "+s.proj)});L.push("","INTERVIEW PREPARATION");
+ r.iv.forEach(function(x){L.push("Q: "+x.q,"A: "+x.a,"")});return L.join("\n")}
+function copy(txt,btn){var ok=false;try{var ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();ok=document.execCommand("copy");document.body.removeChild(ta)}catch(e){}
+ var o=btn.textContent;btn.textContent=ok?"Copied":"Copy failed";setTimeout(function(){btn.textContent=o},1500)}
+function dlr(r){var m=$("msg");
+ (window.claude&&claude.use?claude.use("downloads"):Promise.resolve(null)).then(function(d){
+  if(!d){if(m)m.textContent="Downloads are not available here. Use Copy full report instead.";return}
+  return d.save({filename:r.f.name.replace(/[^a-z0-9]+/gi,"-").toLowerCase()+"-career-report.txt",data:new Blob([full(r)],{type:"text/plain"})}).then(function(){if(m)m.textContent="Saved."},function(e){if(m)m.textContent=e&&e.code==="declined"?"Download cancelled.":"Download is not available here. Use Copy full report instead."})
+ }).catch(function(){if(m)m.textContent="Download is not available here. Use Copy full report instead."})}
+
+function saved(){var a=load(),el=$("savedBody");
+ if(!a.length){el.innerHTML='<h2>Saved reports</h2><div class="card empty">No reports yet. Generate one from your dashboard and it is saved here automatically.<br><br><button class="btn" onclick="go(\'profile\')">Create a profile</button></div>';return}
+ el.innerHTML='<h2>Saved reports</h2><div class="card">'+a.map(function(r){return '<div class="saved"><div><b>'+esc(r.f.name)+': '+esc(r.f.role.t)+'</b><br><span class="hint">'+esc(r.ts)+'</span> <span class="pill">'+r.f.score+'% ready</span></div><div class="acts"><button class="ghost" data-v="'+r.id+'">View report</button><button class="ghost" data-d="'+r.id+'">Download report</button><button class="ghost" data-x="'+r.id+'">Delete</button></div></div>'}).join("")+'</div><p class="hint" id="msg"></p>';
+ el.onclick=function(e){var t=e.target,id=t.dataset.v||t.dataset.d||t.dataset.x;if(!id)return;var all=load(),r=all.filter(function(x){return String(x.id)===id})[0];if(!r)return;
+  if(t.dataset.v){rep=r;go("report")}else if(t.dataset.d){dlr(r)}else{store(all.filter(function(x){return x!==r}));saved()}}}
+
+var ROUTES={home:function(){},login:function(){authMode("login")},signup:function(){authMode("signup")},logout:function(){endSession()},profile:function(){},dashboard:dash,report:report,saved:saved};
+var PROT=["profile","dashboard","report","saved"];
+function go(r){if(location.hash==="#"+r)route();else location.hash=r}
+function route(){var r=location.hash.slice(1);if(!ROUTES[r])r="home";
+ if(PROT.indexOf(r)>-1&&!SESS){location.hash="login";return}
+ if((r==="login"||r==="signup")&&SESS){location.hash="dashboard";return}
+ ROUTES[r]();navRender();var sec=r==="signup"?"login":r;
+ Array.prototype.forEach.call(document.querySelectorAll("section"),function(x){x.classList.toggle("on",x.id==="s-"+sec)});
+ Array.prototype.forEach.call(document.querySelectorAll("nav a[data-r]"),function(a){a.classList.toggle("on",a.dataset.r===r)});
+ window.scrollTo(0,0)}
+window.addEventListener("hashchange",route);
+$("start").onclick=function(){go(SESS?"dashboard":"signup")};$("start2").onclick=function(){go("login")};$("authGo").onclick=submitAuth;$("pw").onkeydown=function(e){if(e.key==="Enter")submitAuth()};
+$("sample").onclick=function(){fill(EX)};
+$("saveProfile").onclick=function(){
+ if(!$("name").value.trim()||!parseSkills($("skills").value).length){$("pmsg").textContent="Add your name and at least one skill, or select Fill with example.";return}
+ cur=build();wr("pf_profile_"+SESS,vals());go("dashboard")};
+(function(){var e=rd("pf_sess",null);if(e&&users()[e]){SESS=e;var p=rd("pf_profile_"+e,null);if(p){fill(p);if(parseSkills(p.skills).length)cur=build()}}})();
+route();
+</script>
+</body>
+</html>
